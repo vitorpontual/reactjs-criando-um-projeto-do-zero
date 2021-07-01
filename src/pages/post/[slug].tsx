@@ -50,9 +50,12 @@ export default function Post({ post }: PostProps): JSX.Element {
   ) 
   
   const countWords = post.data.content.reduce((acc, wordsC) => {
+    const heading = wordsC.heading.split(' ').length
+    acc += heading
     acc += RichText.asText(wordsC.body).split(' ').length
     return acc
   }, 0)
+
   const readingTime = Math.ceil(countWords / 200)
   return (
     <>
