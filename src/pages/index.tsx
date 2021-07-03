@@ -12,6 +12,8 @@ import commonStyles from '../styles/common.module.scss';
 import { getPrismicClient } from '../services/prismic';
 
 import styles from './home.module.scss';
+import PreviewButton from '../components/PreviewBtn';
+
 interface Post {
   uid?: string;
   first_publication_date: string | null;
@@ -28,10 +30,11 @@ interface PostPagination {
 }
 
 interface HomeProps {
+  preview: boolean;
   postsPagination: PostPagination;
 }
 
-export default function Home({ postsPagination }: HomeProps) {
+export default function Home({ postsPagination, preview}: HomeProps) {
   const formattedPost = postsPagination.results.map(post => {
     return {
       ...post,
@@ -41,7 +44,7 @@ export default function Home({ postsPagination }: HomeProps) {
         {
           locale: ptBR
         }
-      )
+      ),
     }
   })
   const [posts, setPosts] = useState<Post[]>(formattedPost);
@@ -86,6 +89,7 @@ export default function Home({ postsPagination }: HomeProps) {
         <title>spacetravelling | Home </title>
       </Head>
       <main className={commonStyles.container}>
+        <img src="/images/Logo.svg" alt="logo" />
         <div className={styles.posts} >
           {posts.map(post => (
             <Link key={post.uid} href={`/post/${post.uid}`} >
@@ -111,27 +115,35 @@ export default function Home({ postsPagination }: HomeProps) {
             </button>
           )}
         </div>
-
+        {preview && (
+          <PreviewButton />
+        )}
       </main>
     </>
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({ preview = false, previewData }) => {
   const prismic = getPrismicClient();
+
+
   const postsResponse = await prismic.query([
     Prismic.predicates.at('document.type', 'posts')
-  ], {
-    fetch: ['post.title', 'post.subtitle', 'post.content'],
-    pageSize: 1,
-    orderings: '[document.last_publication_data desc]'
-  }
+  ],
+    {
+      fetch: ['post.title', 'post.subtitle', 'post.content'],
+      pageSize: 1,
+      orderings: '[document.last_publication_data desc]',
+      ref: previewData?.ref ?? null
+    },
   );
+
 
   const posts = postsResponse.results.map(post => {
     return {
       uid: post.uid,
       first_publication_date: post.first_publication_date,
+      last_publication_date: post.last_publication_date,
       data: {
         title: post.data.title,
         subtitle: post.data.subtitle,
@@ -140,7 +152,6 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   })
 
-
   const postsPagination = {
     next_page: postsResponse.next_page,
     results: posts
@@ -148,7 +159,8 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      postsPagination
+      postsPagination,
+      preview
     }
   }
 };

@@ -5,6 +5,7 @@
 }
 
 .content {
+
   h1 {
     font-size: 3rem;
     color: var(--heading);
@@ -42,6 +43,7 @@
     margin: 0;
     list-style: none;
     display: flex;
+  
 
     & li {
       margin: 0;
@@ -56,4 +58,49 @@
       }
     }
   }
+  > span {
+    margin: 0;
+    display: block;
+    font-style: italic;
+    font-size: 0.875rem;
+    color: var(--info)
+}  
 }
+
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  position: relative;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: var(--heading);
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: var(--highlight);
+    font-weight: 600;
+  }
+
+  div {
+    margin-top: 1.25rem;
+  }
+
+  div + div {
+    text-align: right;
+  }
+}
+
+.positionNav {
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-align: right;
+}
+
+
+
